@@ -27,6 +27,7 @@ function Register() {
   const [avatar, setAvatar] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -38,37 +39,42 @@ function Register() {
     }
   };
 
-const uploadAvatarToServer = async (file: File): Promise<string> => {
-  const formData = new FormData();
-  formData.append('avatar', file);
+  const uploadAvatarToServer = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('avatar', file);
 
-  const res = await fetch('http://localhost:4000/upload', {
-    method: 'POST',
-    body: formData,
-  });
+    const res = await fetch('http://localhost:4000/upload', {
+      method: 'POST',
+      body: formData,
+    });
 
-  const raw = await res.text();
-  console.log('📦 Raw server response:', raw);
+    const raw = await res.text();
+    console.log('📦 Raw server response:', raw);
 
-  try {
-    const data = JSON.parse(raw);
-    return data.imageUrl;
-  } catch (e) {
-    console.error('❌ Failed to parse JSON:', e);
-    throw new Error('Upload failed: Not valid JSON');
-  }
-};
+    try {
+      const data = JSON.parse(raw);
+      return data.imageUrl;
+    } catch (e) {
+      console.error('❌ Failed to parse JSON:', e);
+      throw new Error('Upload failed: Not valid JSON');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (loading) return;
+    setLoading(true);
+
     if (!acceptedTerms) {
       toast.error('You must accept the terms and conditions.');
+      setLoading(false);
       return;
     }
 
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
+      setLoading(false);
       return;
     }
 
@@ -94,9 +100,21 @@ const uploadAvatarToServer = async (file: File): Promise<string> => {
       });
 
       toast.success('Registration successful!');
+      await auth.signOut(); // <-- Sign out after registration
       setTimeout(() => navigate('/login'), 1500);
     } catch (error: any) {
-      toast.error(error.message);
+          if (error.code === 'auth/email-already-in-use') {
+        toast.error('Email already in use.');
+      } else if (error.code === 'auth/invalid-email') {
+        toast.error('Invalid email format.');
+      } else if (error.code === 'auth/weak-password') {
+        toast.error('Password is too weak. Please choose a stronger password.');
+      } else {
+        toast.error(error.message || 'Registration failed. Please try again.');
+      }
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -106,7 +124,7 @@ const uploadAvatarToServer = async (file: File): Promise<string> => {
       <p className="text-sm text-gray-500 mb-6">Let's get you started on your StudyBuddy journey.</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Avatar Upload */}
+        {/* Avatar */}
         <div className="flex flex-col items-center space-y-2">
           <div className="relative">
             <img
@@ -156,20 +174,26 @@ const uploadAvatarToServer = async (file: File): Promise<string> => {
             </label>
           ))}
         </div>
+
         <label className="block text-sm font-medium text-gray-700 uppercase">Date of Birth (DD/MM/YYYY):</label>
         <input type="date" value={dob} onChange={(e) => setDob(e.target.value)} className="w-full p-2 border border-gray-300 rounded text-indigo-600" required />
+
+        {/* Password Fields */}
         <div className="relative">
           <input type={showPassword ? 'text' : 'password'} placeholder="Password" className="w-full p-2 border border-gray-300 rounded text-indigo-600 pr-10" value={password} onChange={(e) => setPassword(e.target.value)} required />
           <button type="button" onClick={() => setShowPassword(!showPassword)} className="cursor-pointer absolute right-2 top-2 text-indigo-500 hover:scale-110 transition">
             {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
           </button>
         </div>
+
         <div className="relative">
           <input type={showConfirmPassword ? 'text' : 'password'} placeholder="Confirm Password" className="w-full p-2 border border-gray-300 rounded text-indigo-600 pr-10" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
           <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="cursor-pointer absolute right-2 top-2 text-indigo-500 hover:scale-110 transition">
             {showConfirmPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
           </button>
         </div>
+
+        {/* Terms and Submit */}
         <label className="flex items-center space-x-2 cursor-pointer text-sm">
           <div className="relative">
             <input type="checkbox" checked={acceptedTerms} onChange={() => setAcceptedTerms(!acceptedTerms)} className="cursor-pointer appearance-none w-5 h-5 border border-gray-300 rounded-sm bg-white checked:bg-indigo-600 checked:border-indigo-600 transition peer" />
@@ -179,12 +203,18 @@ const uploadAvatarToServer = async (file: File): Promise<string> => {
           </div>
           <span className="text-gray-700">I agree to the <a href="#" className="text-indigo-500 hover:underline">Terms and Conditions</a></span>
         </label>
-        <button type="submit" className="cursor-pointer w-full bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700 transition">Register</button>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full p-2 rounded text-white transition ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer'}`}
+        >
+          {loading ? 'Registering...' : 'Register'}
+        </button>
       </form>
 
       <p className="mt-4 text-sm text-center text-gray-600">
-        Already have an account?{' '}
-        <Link to="/login" className="text-indigo-500 hover:underline">Sign in</Link>
+        Already have an account? <Link to="/login" className="text-indigo-500 hover:underline">Sign in</Link>
       </p>
     </div>
   );
