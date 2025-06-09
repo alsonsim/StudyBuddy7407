@@ -30,7 +30,7 @@ function Login() {
       await signInWithEmailAndPassword(auth, email, password);
 
       toast.success('Signed in successfully!');
-      navigate('/');
+      navigate('/dashboard');
     } catch (error: any) {
       toast.error('Invalid email or password');
     }

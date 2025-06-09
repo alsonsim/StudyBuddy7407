@@ -12,15 +12,16 @@ export default function App() {
 
   return (
     <Routes>
-      <Route element={<Layout />}>
-        <Route
-          index
-          element={user ? <Dashboard /> : <LandingPage />}
-        />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Route>
-    </Routes>
+  {/* Public pages inside Layout */}
+  <Route element={<Layout />}>
+    <Route index element={<LandingPage />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/register" element={<Register />} />
+  </Route>
+
+  {/* Protected dashboard route (no Layout) */}
+  <Route path="/dashboard" element={user ? <Dashboard /> : <Login />} />
+</Routes>
+
   );
 }
-
