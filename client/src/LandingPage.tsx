@@ -253,7 +253,7 @@ export default function LandingPage() {
                       <div className="text-gray-600 group-hover:text-gray-800 transition-colors duration-300">
                         {stat.label}
                       </div>
-                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="cursor-default absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                   </div>
                 ))}
@@ -277,7 +277,7 @@ export default function LandingPage() {
               <Zap className="text-indigo-600 animate-pulse" size={16} />
               <span className="text-sm text-gray-600 font-medium">Powerful Features</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent pb-3">
               Everything you need to succeed
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">

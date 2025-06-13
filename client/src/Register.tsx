@@ -106,7 +106,7 @@ function Register() {
       const formData = new FormData();
       formData.append('avatar', file);
       
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/upload`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -153,7 +153,7 @@ function Register() {
         createdAt: new Date().toISOString(),
       };
 
-      await setDoc(doc(db, 'Users', user.uid), userData);
+      await setDoc(doc(db, 'users', user.uid), userData);
 
       toast.success('Registration successful! Please check your email for verification.');
       await auth.signOut();
@@ -324,7 +324,7 @@ function Register() {
                       value={option}
                       checked={gender === option}
                       onChange={(e) => setGender(e.target.value)}
-                      className="appearance-none w-4 h-4 border border-gray-300 rounded-full bg-white checked:bg-indigo-600 checked:border-indigo-600 checked:ring-2 checked:ring-indigo-400 transition"
+                      className="cursor-pointer appearance-none w-4 h-4 border border-gray-300 rounded-full bg-white checked:bg-indigo-600 checked:border-indigo-600 checked:ring-2 checked:ring-indigo-400 transition"
                       aria-invalid={!!formErrors.gender}
                       aria-describedby="genderError"
                     />
