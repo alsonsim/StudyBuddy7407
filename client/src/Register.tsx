@@ -6,6 +6,7 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
 import { BookOpen } from 'lucide-react';
+import TermsModal from './components/TermsModal';
 
 interface UserData {
   uid: string;
@@ -181,6 +182,8 @@ function Register() {
     if (!/[0-9]/.test(pass)) return { valid: false, message: 'At least 1 number' };
     return { valid: true };
   };
+
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 font-sans flex flex-col justify-between">
@@ -427,11 +430,20 @@ function Register() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <span className="text-gray-700">I agree to the <Link to="/terms" className="text-indigo-500 hover:underline">Terms and Conditions</Link></span>
+                <span className="text-gray-700">I agree to the <button
+                  type="button"
+                  onClick={() => setShowTermsModal(true)}
+                  className="text-indigo-500 hover:underline cursor-pointer"
+                >
+                  Terms and Conditions
+                </button>
+                </span>
               </label>
-              {formErrors.terms && <p id="termsError" className="text-red-500 text-xs mt-1">{formErrors.terms}</p>}
+              {formErrors.terms ? (
+                  <p id="termsError" className="text-red-500 text-xs mt-1">{formErrors.terms}</p>
+                ) : null}
             </div>
-
+    
             {/* Submit Button */}
             <button
               type="submit"
@@ -465,6 +477,14 @@ function Register() {
           </p>
         </div>
       </footer>
+      <TermsModal
+        isOpen={showTermsModal}
+        onClose={() => setShowTermsModal(false)} // this hides the modal
+        onAcceptTerms={() => {
+          setAcceptedTerms(true);                // checks the box
+          setShowTermsModal(false);             // closes the modal!
+        }}
+      />
     </div>
   );
 }
