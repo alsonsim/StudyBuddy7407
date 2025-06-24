@@ -7,6 +7,7 @@ import Dashboard from "./Dashboard";
 import { useAuth } from "./AuthContext";
 import Terms from './terms';
 import Tasks from './Tasks';
+import SettingsPage from './Settings';
 
 export default function App() {
   const { user } = useAuth();
@@ -21,6 +22,7 @@ export default function App() {
       {/* Protected dashboard route */}
       <Route path="/dashboard" element={user ? <Dashboard /> : <Login />} />
       <Route path="/tasks" element={<Tasks />} />
+      <Route path="/settings" element={user ? <SettingsPage /> : <Login />} />
 
       {/*terms n condition*/}
       <Route path="/terms" element={<Terms />} />

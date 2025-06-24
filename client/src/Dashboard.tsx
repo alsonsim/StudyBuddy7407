@@ -228,7 +228,7 @@ const taskStats = getTaskStats();
         <div className="mt-8 space-y-2">
           <p className="text-sm font-semibold text-gray-500 uppercase">General</p>
           <nav className="space-y-2 font-medium">
-            <SidebarLink icon={<Settings />} label="Settings" />
+            <SidebarLink icon={<Settings />} label="Settings" onClick={() => navigate('/settings')} />
             <SidebarLink icon={<HelpCircle />} label="Help" />
             <SidebarLink icon={<User />} label="Profile" />
             <button
