@@ -6,6 +6,7 @@ import LandingPage from "./LandingPage";
 import Dashboard from "./Dashboard";
 import { useAuth } from "./AuthContext";
 import Terms from './terms';
+import Tasks from './Tasks';
 
 export default function App() {
   const { user } = useAuth();
@@ -19,6 +20,7 @@ export default function App() {
 
       {/* Protected dashboard route */}
       <Route path="/dashboard" element={user ? <Dashboard /> : <Login />} />
+      <Route path="/tasks" element={<Tasks />} />
 
       {/*terms n condition*/}
       <Route path="/terms" element={<Terms />} />

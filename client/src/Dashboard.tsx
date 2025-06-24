@@ -27,6 +27,18 @@ import {
   Zap
 } from 'lucide-react';
 
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  completed: boolean;
+  priority: 'low' | 'medium' | 'high';
+  dueDate: string;
+  category: string;
+  createdAt: string;
+  userId: string;
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [name, setName] = useState('');
@@ -39,6 +51,7 @@ export default function Dashboard() {
   const [isPomodoroOpen, setIsPomodoroOpen] = useState(false);
   const [lastStreakDate, setLastStreakDate] = useState<string | null>(null); // In-memory storage
   const navigate = useNavigate();
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -80,6 +93,21 @@ export default function Dashboard() {
     }
   }, [lastStreakDate]);
 
+  useEffect(() => {
+  if (!user) return;
+
+  const savedTasks = localStorage.getItem(`tasks_${user.uid}`);
+  if (savedTasks) {
+    try {
+      const parsedTasks = JSON.parse(savedTasks);
+      setTasks(parsedTasks);
+    } catch (error) {
+      console.error('Error parsing saved tasks:', error);
+      setTasks([]);
+    }
+  }
+}, [user]);
+
 const handleContinueStreak = async () => {
   if (streakContinued || !user) return;
 
@@ -120,6 +148,23 @@ const handleContinueStreak = async () => {
       console.error("Sign-out error:", error);
     }
   };
+
+  const getTaskStats = () => {
+  const completedCount = tasks.filter(t => t.completed).length;
+  const pendingCount = tasks.filter(t => !t.completed).length;
+  const todayTasks = tasks.filter(t => {
+    if (!t.dueDate) return false;
+    return new Date(t.dueDate).toDateString() === new Date().toDateString();
+  }).length;
+  const overdueTasks = tasks.filter(t => {
+    if (!t.dueDate || t.completed) return false;
+    return new Date(t.dueDate) < new Date();
+  }).length;
+
+  return { completedCount, pendingCount, todayTasks, overdueTasks };
+};
+
+const taskStats = getTaskStats();
 
   return (
     <div className="min-h-screen flex font-sans bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 text-[15px]">
@@ -168,7 +213,11 @@ const handleContinueStreak = async () => {
           <p className="text-sm font-semibold text-gray-500 uppercase">Menu</p>
           <nav className="space-y-2 font-medium">
             <SidebarLink icon={<BarChart3 />} label="Dashboard" active />
-            <SidebarLink icon={<ListTodo />} label="Tasks" />
+            <SidebarLink 
+              icon={<ListTodo />} 
+              label="Tasks" 
+              onClick={() => navigate('/tasks')} 
+            />
             <SidebarLink icon={<Users />} label="Start Searching" />
             <SidebarLink icon={<Calendar />} label="Calendar" />
             <SidebarLink icon={<BarChart3 />} label="Leaderboard" />
@@ -273,7 +322,7 @@ const handleContinueStreak = async () => {
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform ${
                   streakContinued
                     ? 'bg-green-500 text-white cursor-not-allowed opacity-75'
-                    : 'bg-white text-orange-600 hover:bg-gray-50 hover:scale-105 shadow-lg hover:shadow-xl'
+                    : 'cursor-pointer bg-white text-orange-600 hover:bg-gray-50 hover:scale-105 shadow-lg hover:shadow-xl'
                 }`}
               >
                 {streakContinued ? '✅ Streak Continued!' : '🔥 Continue Streak'}
@@ -283,29 +332,77 @@ const handleContinueStreak = async () => {
         </div>
 
         <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <EnhancedStatCard title="Daily Streak" value={String(streak)} subtitle="days in a row!" color="indigo" icon={<Flame />} trend="+2 from yesterday" />
-          <EnhancedStatCard title="Completed Tasks" value="24" subtitle="this week" color="green" icon={<CheckCircle />} trend="+15%" />
-          <EnhancedStatCard title="Study Hours" value="32.5" subtitle="this month" color="purple" icon={<Clock />} trend="+8.2hrs" />
-          <EnhancedStatCard title="Active Goals" value="5" subtitle="in progress" color="amber" icon={<AlertTriangle />} trend="2 due this week" />
+          <EnhancedStatCard 
+            title="Daily Streak" 
+            value={String(streak)} 
+            subtitle="days in a row!" 
+            color="indigo" 
+            icon={<Flame />} 
+            trend="+2 from yesterday" 
+          />
+          <EnhancedStatCard 
+            title="Completed Tasks" 
+            value={String(taskStats.completedCount)} 
+            subtitle="total completed" 
+            color="green" 
+            icon={<CheckCircle />} 
+            trend={taskStats.completedCount > 0 ? `+${taskStats.completedCount} done` : "No tasks yet"} 
+          />
+          <EnhancedStatCard 
+            title="Pending Tasks" 
+            value={String(taskStats.pendingCount)} 
+            subtitle="to complete" 
+            color="purple" 
+            icon={<Clock />} 
+            trend={taskStats.todayTasks > 0 ? `${taskStats.todayTasks} due today` : "No due dates set"} 
+          />
+          <EnhancedStatCard 
+            title="Task Status" 
+            value={String(tasks.length)} 
+            subtitle="total tasks" 
+            color="amber" 
+            icon={<AlertTriangle />} 
+            trend={taskStats.overdueTasks > 0 ? `${taskStats.overdueTasks} overdue!` : "All up to date"} 
+          />
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <EnhancedWidgetCard title="Pomodoro Timer" description="Focus with 25-minute work sessions" emoji="⏱️" color="red" status="25:00 - Ready" onClick={() => setIsPomodoroOpen(true)} />
-          <EnhancedWidgetCard title="Study Buddies" description="Connect with peers in your field" emoji="👥" color="blue" status="12 online" />
-          <EnhancedWidgetCard title="Chat Rooms" description="Join study discussions" emoji="💬" color="green" status="3 new messages" />
+          <EnhancedWidgetCard 
+            title="Pomodoro Timer" 
+            description="Focus with 25-minute work sessions" 
+            emoji="⏱️" 
+            color="red" 
+            status="25:00 - Ready" 
+            onClick={() => setIsPomodoroOpen(true)} 
+          />
+          <EnhancedWidgetCard 
+            title="My Tasks" 
+            description="Manage your to-do list and stay organized" 
+            emoji="📝" 
+            color="blue" 
+            status={`${taskStats.pendingCount} pending`}
+            onClick={() => navigate('/tasks')}
+          />
+          <EnhancedWidgetCard 
+            title="Study Buddies" 
+            description="Connect with peers in your field" 
+            emoji="👥" 
+            color="green" 
+            status="12 online" 
+          />
+          <EnhancedWidgetCard 
+            title="Chat Rooms" 
+            description="Join study discussions" 
+            emoji="💬" 
+            color="purple" 
+            status="3 new messages" 
+          />
           <EnhancedWidgetCard 
             title="AI Tutor" 
             description="Get personalized study assistance"
             emoji="🤖"
-            color="purple"
-            status="Available 24/7"
-          />
-          <EnhancedWidgetCard 
-            title="Progress Analytics" 
-            description="Track your learning journey"
-            emoji="📊"
             color="indigo"
-            status="Weekly report ready"
+            status="Available 24/7"
           />
           <EnhancedWidgetCard 
             title="Achievements" 
@@ -338,19 +435,29 @@ const handleContinueStreak = async () => {
   );
 }
 
-function SidebarLink({ icon, label, active = false }: { icon: JSX.Element; label: string; active?: boolean }) {
+function SidebarLink({
+  icon,
+  label,
+  active = false,
+  onClick,
+}: {
+  icon: JSX.Element;
+  label: string;
+  active?: boolean;
+  onClick?: () => void;
+}) {
   return (
-    <a
-      href="#"
-      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 transform ${
+    <button
+      onClick={onClick}
+      className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 transform ${
         active
           ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg scale-105'
-          : 'hover:bg-indigo-50 text-gray-700 hover:shadow-md hover:-translate-y-0.5'
+          : 'cursor-pointer hover:bg-indigo-50 text-gray-700 hover:shadow-md hover:-translate-y-0.5'
       }`}
     >
       <span className={`text-lg ${active ? 'text-white' : 'text-indigo-600'}`}>{icon}</span>
       <span className="text-base font-medium">{label}</span>
-    </a>
+    </button>
   );
 }
 
