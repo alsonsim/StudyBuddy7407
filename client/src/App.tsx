@@ -8,6 +8,8 @@ import { useAuth } from "./AuthContext";
 import Terms from './terms';
 import Tasks from './Tasks';
 import SettingsPage from './Settings';
+import GoogleCalendar from "./components/GoogleCalendar";
+
 
 export default function App() {
   const { user } = useAuth();
@@ -26,6 +28,8 @@ export default function App() {
 
       {/*terms n condition*/}
       <Route path="/terms" element={<Terms />} />
+
+      <Route path="/calendar" element={user ? <GoogleCalendar /> : <Login />} />
 
     </Routes>
   );
