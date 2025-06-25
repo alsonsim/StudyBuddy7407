@@ -263,7 +263,7 @@ export default function Tasks() {
             <SidebarLink icon={<BarChart3 />} label="Dashboard" onClick={() => navigate('/dashboard')} />
             <SidebarLink icon={<ListTodo />} label="Tasks" active />
             <SidebarLink icon={<Users />} label="Start Searching" />
-            <SidebarLink icon={<Calendar />} label="Calendar" />
+            <SidebarLink icon={<Calendar />} label="Calendar" onClick={() => navigate('/calendar') }/>
             <SidebarLink icon={<BarChart3 />} label="Leaderboard" />
           </nav>
         </div>
@@ -577,7 +577,7 @@ export default function Tasks() {
   );
 }
 
-function SidebarLink({ icon, label, active = false, onClick }: { icon: JSX.Element; label: string; active?: boolean; onClick?: () => void }) {
+export function SidebarLink({ icon, label, active = false, onClick }: { icon: JSX.Element; label: string; active?: boolean; onClick?: () => void }) {
   return (
     <button
       onClick={onClick}

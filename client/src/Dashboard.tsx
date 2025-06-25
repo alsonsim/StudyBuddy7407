@@ -7,6 +7,7 @@ import { signOut } from 'firebase/auth';
 import { useAuth } from './AuthContext';
 import PomodoroTimer from './components/PomodoroTimer';
 
+
 import {
   BarChart3,
   Calendar,
@@ -219,7 +220,12 @@ const taskStats = getTaskStats();
               onClick={() => navigate('/tasks')} 
             />
             <SidebarLink icon={<Users />} label="Start Searching" />
-            <SidebarLink icon={<Calendar />} label="Calendar" />
+            <SidebarLink 
+              icon={<Calendar />} 
+              label="Calendar"
+              onClick={() => navigate('/calendar')}
+            />
+            
             <SidebarLink icon={<BarChart3 />} label="Leaderboard" />
           </nav>
         </div>

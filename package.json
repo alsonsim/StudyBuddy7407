@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "gapi-script": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/gapi": "^0.0.47",
+    "@types/gapi.auth2": "^0.0.61"
+  }
+}
