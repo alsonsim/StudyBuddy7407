@@ -97,4 +97,8 @@ h1 {
   animation: bounceSlow 3.5s infinite;
 }
 
+.fc-toolbar-title {
+  @apply text-indigo-600 font-semibold text-2xl;
+}
+
 @import "tailwindcss";

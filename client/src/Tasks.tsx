@@ -335,8 +335,8 @@ export default function Tasks() {
             >
               <Plus size={16} /> Add New Task
             </button>
-            <button className="bg-white text-indigo-600 px-6 py-3 rounded-xl hover:bg-gray-50 font-semibold">
-              View Analytics
+            <button className="cursor-pointer bg-white text-indigo-600 px-6 py-3 rounded-xl hover:bg-gray-50 font-semibold" onClick={() => navigate('/calendar')}>
+              View Calendar
             </button>
           </div>
         </div>
