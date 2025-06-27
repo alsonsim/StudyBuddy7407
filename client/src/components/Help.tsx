@@ -58,6 +58,67 @@ export default function Help(){
             </p>
             </div>
         </aside>
+        <main className="flex-1 p-10 overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+        <div>
+            <h1 className="text-3xl font-bold text-indigo-700">Help & Support</h1>
+            <p className="text-sm text-gray-500">Need assistance? Check the FAQs or contact us below.</p>
+        </div>
+        </div>
+
+        {/* Help card */}
+        <div className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-3xl p-6 shadow-xl mb-10">
+        <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+            <HelpCircle className="w-6 h-6" /> Frequently Asked Questions
+        </h2>
+        <p className="text-sm">Browse some of the most commonly asked questions below.</p>
+        </div>
+
+        {/* FAQs */}
+        <div className="grid gap-6">
+        {[
+            {
+            q: "How do I track my tasks?",
+            a: "Navigate to the Tasks tab where you can add, update, and check off completed items."
+            },
+            {
+            q: "How do I reset my password?",
+            a: "Navigate to the Settings page where you can edit your account details."
+            },
+            {
+            q: "How do I connect my Google Calendar?",
+            a: "Go to the Calendar page and sign in with your Google account to sync events."
+            },
+            {
+            q: "How does the Pomodoro Timer work?",
+            a: "It's a 25-minute focus session followed by short breaks. You can find it on the Dashboard."
+            },
+            {
+            q: "Where can I change my avatar or info?",
+            a: "Head to the Settings page where you can update your profile and export your data."
+            }
+            
+        ].map(({ q, a }, idx) => (
+            <details key={idx} className="group bg-white/80 backdrop-blur-xl border border-white/30 rounded-xl p-4 shadow transition hover:shadow-md">
+            <summary className="cursor-pointer font-semibold text-indigo-700 group-hover:text-indigo-900 text-lg">
+                {q}
+            </summary>
+            <p className="mt-2 text-gray-700 pl-1">{a}</p>
+            </details>
+        ))}
+        </div>
+
+        {/* Contact Box */}
+        <div className="mt-12 bg-white/80 backdrop-blur-xl border border-white/30 rounded-3xl p-6 shadow-xl">
+        <h2 className="text-xl font-bold text-indigo-700 mb-2">📬 Still need help?</h2>
+        <p className="text-gray-600 mb-4">Contact us at <a className="text-indigo-600 font-medium" href="mailto:studybuddy@support.com">studybuddy@support.com</a> and we’ll get back to you as soon as possible.</p>
+        <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-xl transition duration-200 shadow-md">
+            Submit Feedback
+        </button>
+        </div>
+        </main>
+        
         </div>
     );
     }
