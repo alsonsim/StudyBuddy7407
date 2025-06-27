@@ -9,7 +9,7 @@ import Terms from './terms';
 import Tasks from './Tasks';
 import SettingsPage from './Settings';
 import GoogleCalendar from "./components/GoogleCalendar";
-
+import Help from './components/Help';
 
 export default function App() {
   const { user } = useAuth();
@@ -26,9 +26,11 @@ export default function App() {
       <Route path="/tasks" element={<Tasks />} />
       <Route path="/settings" element={user ? <SettingsPage /> : <Login />} />
       <Route path="/calendar" element={user ? <GoogleCalendar /> : <Login />} />
+      <Route path="/Help" element={user ? <Help /> : <Login />} />
 
       {/*terms n condition*/}
       <Route path="/terms" element={<Terms />} />
+
 
     </Routes>
   );

@@ -235,8 +235,8 @@ const taskStats = getTaskStats();
           <p className="text-sm font-semibold text-gray-500 uppercase">General</p>
           <nav className="space-y-2 font-medium">
             <SidebarLink icon={<Settings />} label="Settings" onClick={() => navigate('/settings')} />
-            <SidebarLink icon={<HelpCircle />} label="Help" />
-            <SidebarLink icon={<User />} label="Profile" />
+            <SidebarLink icon={<HelpCircle />} label="Help" onClick={() => navigate('/help')}/>
+            <SidebarLink icon={<User />} label="Profile" onClick={() => navigate('/profile')}/>
             <button
               onClick={() => setIsLogoutOpen(true)}
               className="group cursor-pointer flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-600 hover:bg-red-50 hover:text-red-700 w-full text-left hover:shadow-md transform hover:-translate-y-0.5"
@@ -287,10 +287,10 @@ const taskStats = getTaskStats();
           <h1 className="text-3xl font-bold mb-2">Welcome back, {name}! 👋</h1>
           <p className="text-lg opacity-90 mb-6">Ready to crush your goals today?</p>
           <div className="flex gap-4">
-            <button className="flex items-center gap-2 cursor-pointer bg-white/20 text-white px-6 py-3 rounded-xl transition-all duration-300 transform hover:bg-white/30 hover:-translate-y-1 hover:shadow-md active:scale-95" onClick={() => navigate('/tasks')}>
+            <button className="bg-white/20 text-white px-6 py-3 rounded-xl hover:bg-white/30">
               <Plus size={16} /> Quick Task
             </button>
-            <button className="cursor-pointer bg-white text-indigo-600 px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:bg-gray-100 hover:-translate-y-1 hover:shadow-md active:scale-95" onClick={() => navigate('/calendar')}>
+            <button className="bg-white text-indigo-600 px-6 py-3 rounded-xl hover:bg-gray-50 font-semibold">
               View Schedule
             </button>
           </div>
@@ -441,7 +441,7 @@ const taskStats = getTaskStats();
   );
 }
 
-function SidebarLink({
+export function SidebarLink({
   icon,
   label,
   active = false,

@@ -55,7 +55,7 @@ export default function GoogleCalendar() {
           <p className="text-sm font-semibold text-gray-500 uppercase">General</p>
           <nav className="space-y-2 font-medium">
             <SidebarLink icon={<Settings />} label="Settings" onClick={() => navigate('/settings')} />
-            <SidebarLink icon={<HelpCircle />} label="Help" />
+            <SidebarLink icon={<HelpCircle />} label="Help" onClick={() => navigate('/help')} />
             <SidebarLink icon={<User />} label="Profile" />
             <button
               onClick={() => setIsLogoutOpen(true)}
