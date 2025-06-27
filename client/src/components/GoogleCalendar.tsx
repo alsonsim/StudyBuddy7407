@@ -26,6 +26,8 @@ import {
 import { auth } from "../firebase";
 import { useRef } from "react";
 import type { CalendarApi } from "@fullcalendar/core";
+import { db } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
@@ -37,6 +39,8 @@ export default function GoogleCalendar() {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showIntegrationPrompt, setShowIntegrationPrompt] = useState(true);
+  const [name, setName] = useState("");
+  const [avatarURL, setAvatarURL] = useState("");
 
   const calendarRef = useRef<FullCalendar | null>(null);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -46,6 +50,30 @@ export default function GoogleCalendar() {
     const interval = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+  const loadUserData = async () => {
+    if (user) {
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setName(userData.name || user.displayName || "User");
+          setAvatarURL(userData.avatarURL || user.photoURL || "/default-avatar.png");
+        } else {
+          setName(user.displayName || "User");
+          setAvatarURL(user.photoURL || "/default-avatar.png");
+        }
+      } catch (error) {
+        console.error("Error loading user data:", error);
+        setName(user.displayName || "User");
+        setAvatarURL(user.photoURL || "/default-avatar.png");
+      }
+    }
+  };
+
+    loadUserData();
+  }, [user]);
 
   useEffect(() => {
     gapi.load("client:auth2", () => {
@@ -185,12 +213,12 @@ export default function GoogleCalendar() {
             <Bell className="text-gray-500 hover:text-indigo-600 cursor-pointer" size={24} />
             <div className="flex items-center gap-4 bg-white/80 rounded-2xl p-3 shadow-md">
               <img
-                src={user?.photoURL || '/default-avatar.png'}
+                src={avatarURL || '/default-avatar.png'}
                 alt="Avatar"
                 className="w-12 h-12 rounded-full object-cover ring-3 ring-indigo-200"
               />
               <div className="text-left">
-                <p className="text-base font-semibold text-gray-900">{user?.displayName || 'User'}</p>
+                <p className="text-base font-semibold text-gray-900">{name}</p>
                 <p className="text-sm text-gray-500">{user?.email}</p>
               </div>
             </div>
