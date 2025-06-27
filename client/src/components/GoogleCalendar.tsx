@@ -175,7 +175,7 @@ export default function GoogleCalendar() {
           <nav className="space-y-2 font-medium">
             <SidebarLink icon={<Settings />} label="Settings" onClick={() => navigate('/settings')} />
             <SidebarLink icon={<HelpCircle />} label="Help" onClick={() => navigate('/help')} />
-            <SidebarLink icon={<User />} label="Profile" />
+            <SidebarLink icon={<User />} label="Profile" onClick={() => navigate('/profile')} />
             <button
               onClick={() => setIsLogoutOpen(true)}
               className="group cursor-pointer flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-600 hover:bg-red-50 hover:text-red-700 w-full text-left hover:shadow-md transform hover:-translate-y-0.5"

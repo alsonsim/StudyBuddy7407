@@ -7,7 +7,7 @@ import Dashboard from "./Dashboard";
 import { useAuth } from "./AuthContext";
 import Terms from './terms';
 import Tasks from './Tasks';
-import SettingsPage from './Settings';
+import ProfilePage from './Profile'; 
 import GoogleCalendar from "./components/GoogleCalendar";
 import Help from './components/Help';
 
@@ -24,7 +24,7 @@ export default function App() {
       {/* Protected dashboard route */}
       <Route path="/dashboard" element={user ? <Dashboard /> : <Login />} />
       <Route path="/tasks" element={<Tasks />} />
-      <Route path="/settings" element={user ? <SettingsPage /> : <Login />} />
+      <Route path="/profile" element={user ? <ProfilePage /> : <Login />} />
       <Route path="/calendar" element={user ? <GoogleCalendar /> : <Login />} />
       <Route path="/Help" element={user ? <Help /> : <Login />} />
 
