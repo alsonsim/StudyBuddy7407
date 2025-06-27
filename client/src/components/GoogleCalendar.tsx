@@ -7,21 +7,28 @@ import googleCalendarPlugin from "@fullcalendar/google-calendar";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import { LogOut, Calendar, BarChart3, ListTodo, Settings, HelpCircle, Users, User } from "lucide-react";
-
+import { signOut } from 'firebase/auth';
 import { SidebarLink } from "../Tasks"; 
-
+import { auth } from '../firebase';
 
 export default function GoogleCalendar() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [isLogoutOpen, setIsLogoutOpen] = React.useState(false);
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   useEffect(() => {
     const interval = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
 
-
+ const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/login');
+    } catch (error) {
+      console.error("Sign-out error:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex font-sans bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 text-[15px]">
@@ -87,6 +94,21 @@ export default function GoogleCalendar() {
           />
         </div>
       </main>
+
+      {/* Logout Modal */}
+      {isLogoutOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setIsLogoutOpen(false)}></div>
+          <div className="relative z-10 bg-white rounded-3xl p-8 shadow-2xl border border-gray-200 max-w-md w-full mx-4">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to go?</h3>
+            <p className="text-gray-600 mb-8">You'll be signed out. Your settings are saved!</p>
+            <div className="flex gap-4">
+              <button onClick={() => setIsLogoutOpen(false)} className="cursor-pointer flex-1 px-6 py-3 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50">Stay</button>
+              <button onClick={handleLogout} className="cursor-pointer flex-1 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700">Sign Out</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

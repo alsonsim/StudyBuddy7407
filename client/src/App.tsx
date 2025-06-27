@@ -25,11 +25,10 @@ export default function App() {
       <Route path="/dashboard" element={user ? <Dashboard /> : <Login />} />
       <Route path="/tasks" element={<Tasks />} />
       <Route path="/settings" element={user ? <SettingsPage /> : <Login />} />
+      <Route path="/calendar" element={user ? <GoogleCalendar /> : <Login />} />
 
       {/*terms n condition*/}
       <Route path="/terms" element={<Terms />} />
-
-      <Route path="/calendar" element={user ? <GoogleCalendar /> : <Login />} />
 
     </Routes>
   );

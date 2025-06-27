@@ -235,7 +235,7 @@ export default function SettingsPage() {
             <SidebarLink icon={<BarChart3 />} label="Dashboard" onClick={() => navigate('/dashboard')} />
             <SidebarLink icon={<ListTodo />} label="Tasks" onClick={() => navigate('/tasks')} />
             <SidebarLink icon={<Users />} label="Start Searching" />
-            <SidebarLink icon={<Calendar />} label="Calendar" />
+            <SidebarLink icon={<Calendar />} label="Calendar" onClick={() => navigate('/calendar') }/>
             <SidebarLink icon={<BarChart3 />} label="Leaderboard" />
           </nav>
         </div>
@@ -492,8 +492,8 @@ export default function SettingsPage() {
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to go?</h3>
             <p className="text-gray-600 mb-8">You'll be signed out. Your settings are saved!</p>
             <div className="flex gap-4">
-              <button onClick={() => setIsLogoutOpen(false)} className="flex-1 px-6 py-3 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50">Stay</button>
-              <button onClick={handleLogout} className="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700">Sign Out</button>
+              <button onClick={() => setIsLogoutOpen(false)} className="cursor-pointer flex-1 px-6 py-3 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50">Stay</button>
+              <button onClick={handleLogout} className="cursor-pointer flex-1 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700">Sign Out</button>
             </div>
           </div>
         </div>
