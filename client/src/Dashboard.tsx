@@ -287,10 +287,10 @@ const taskStats = getTaskStats();
           <h1 className="text-3xl font-bold mb-2">Welcome back, {name}! 👋</h1>
           <p className="text-lg opacity-90 mb-6">Ready to crush your goals today?</p>
           <div className="flex gap-4">
-            <button className="bg-white/20 text-white px-6 py-3 rounded-xl hover:bg-white/30">
+            <button className="flex items-center gap-2 cursor-pointer bg-white/20 text-white px-6 py-3 rounded-xl transition-all duration-300 transform hover:bg-white/30 hover:-translate-y-1 hover:shadow-md active:scale-95" onClick={() => navigate('/tasks')}>
               <Plus size={16} /> Quick Task
             </button>
-            <button className="bg-white text-indigo-600 px-6 py-3 rounded-xl hover:bg-gray-50 font-semibold">
+            <button className="cursor-pointer bg-white text-indigo-600 px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:bg-gray-100 hover:-translate-y-1 hover:shadow-md active:scale-95" onClick={() => navigate('/calendar')}>
               View Schedule
             </button>
           </div>

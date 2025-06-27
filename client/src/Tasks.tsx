@@ -331,11 +331,11 @@ export default function Tasks() {
           <div className="flex gap-4">
             <button 
               onClick={() => setIsAddTaskOpen(true)}
-              className="cursor-pointer bg-white/20 text-white px-6 py-3 rounded-xl hover:bg-white/30 flex items-center gap-2"
+              className="flex items-center gap-2 cursor-pointer bg-white/20 text-white px-6 py-3 rounded-xl transition-all duration-300 transform hover:bg-white/30 hover:-translate-y-1 hover:shadow-md active:scale-95"
             >
               <Plus size={16} /> Add New Task
             </button>
-            <button className="cursor-pointer bg-white text-indigo-600 px-6 py-3 rounded-xl hover:bg-gray-50 font-semibold" onClick={() => navigate('/calendar')}>
+            <button className="cursor-pointer bg-white text-indigo-600 px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:bg-gray-100 hover:-translate-y-1 hover:shadow-md active:scale-95" onClick={() => navigate('/calendar')}>
               View Calendar
             </button>
           </div>

@@ -246,7 +246,7 @@ export default function ProfilePage() {
           <nav className="space-y-2 font-medium">
             <SidebarLink icon={<Settings />} label="Settings" onClick={() => navigate('/settings')} />
             <SidebarLink icon={<HelpCircle />} label="Help" onClick={() => navigate('/help')} />
-            <SidebarLink icon={<User />} label="Profile" onClick={() => navigate('/profile')} />
+            <SidebarLink icon={<User />} label="Profile" active />
             <button
               onClick={() => setIsLogoutOpen(true)}
               className="group cursor-pointer flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-600 hover:bg-red-50 hover:text-red-700 w-full text-left hover:shadow-md transform hover:-translate-y-0.5"
@@ -305,11 +305,11 @@ export default function ProfilePage() {
           <div className="flex gap-4">
             <button 
               onClick={() => document.getElementById('avatar-input')?.click()}
-              className="cursor-pointer bg-white/20 text-white px-6 py-3 rounded-xl hover:bg-white/30 flex items-center gap-2"
+              className="flex items-center gap-2 cursor-pointer bg-white/20 text-white px-6 py-3 rounded-xl transition-all duration-300 transform hover:bg-white/30 hover:-translate-y-1 hover:shadow-md active:scale-95"
             >
               <Camera size={16} /> Change Avatar
             </button>
-            <button className="bg-white text-indigo-600 px-6 py-3 rounded-xl hover:bg-gray-50 font-semibold">
+            <button className="cursor-pointer bg-white text-indigo-600 px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:bg-gray-100 hover:-translate-y-1 hover:shadow-md active:scale-95">
               Export Data
             </button>
           </div>
