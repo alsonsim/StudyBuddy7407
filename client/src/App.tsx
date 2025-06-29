@@ -11,6 +11,7 @@ import ProfilePage from './Profile';
 import GoogleCalendar from "./components/GoogleCalendar";
 import Help from './components/Help';
 import Match from './Match';
+import SettingsPage from "./Settings"; 
 
 export default function App() {
   const { user } = useAuth();
@@ -29,6 +30,7 @@ export default function App() {
       <Route path="/calendar" element={user ? <GoogleCalendar /> : <Login />} />
       <Route path="/Help" element={user ? <Help /> : <Login />} />
       <Route path="/match" element={user ? <Match /> : <Login />} />
+      <Route path="/settings" element={user ? <SettingsPage /> : <Login />} />
 
       {/*terms n condition*/}
       <Route path="/terms" element={<Terms />} />
