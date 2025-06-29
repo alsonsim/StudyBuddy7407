@@ -7,6 +7,8 @@ import { toast } from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
 import { BookOpen } from 'lucide-react';
 import TermsModal from './components/TermsModal';
+import { supabase } from './lib/supabaseClient'; // adjust path if needed
+import { v4 as uuidv4 } from 'uuid';
 
 interface UserData {
   uid: string;
@@ -102,28 +104,30 @@ function Register() {
     setAvatarPreview(URL.createObjectURL(file));
   };
 
-  const uploadAvatarToServer = async (file: File): Promise<string> => {
-    try {
-      const formData = new FormData();
-      formData.append('avatar', file);
-      
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/upload`, {
-        method: 'POST',
-        body: formData,
-      });
+const uploadAvatarToSupabase = async (file: File): Promise<string> => {
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${uuidv4()}.${fileExt}`;
+  const filePath = `avatars/${fileName}`;
 
-      if (!res.ok) {
-        throw new Error('Avatar upload failed');
-      }
+  const { error } = await supabase.storage.from('avatars').upload(filePath, file);
+  if (error) {
+    console.error('Upload error:', error);
+    toast.error('Avatar upload failed');
+    return '';
+  }
 
-      const data = await res.json();
-      return data.imageUrl;
-    } catch (error) {
-      console.error('Avatar upload error:', error);
-      toast.error('Failed to upload avatar. Using default image.');
-      return '';
-    }
-  };
+  const { data, error: urlError } = supabase.storage
+    .from('avatars')
+    .getPublicUrl(filePath);
+
+  if (urlError || !data?.publicUrl) {
+    console.error('Failed to get public URL:', urlError?.message);
+    toast.error('Failed to get avatar URL');
+    return '';
+  }
+
+  return data.publicUrl;
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,7 +143,7 @@ function Register() {
 
       let avatarURL = '';
       if (avatar) {
-        avatarURL = await uploadAvatarToServer(avatar);
+        avatarURL = await uploadAvatarToSupabase(avatar);
       }
 
       const userData: UserData = {

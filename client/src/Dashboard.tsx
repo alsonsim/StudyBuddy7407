@@ -7,7 +7,6 @@ import { signOut } from 'firebase/auth';
 import { useAuth } from './AuthContext';
 import PomodoroTimer from './components/PomodoroTimer';
 
-
 import {
   BarChart3,
   Calendar,
@@ -219,7 +218,7 @@ const taskStats = getTaskStats();
               label="Tasks" 
               onClick={() => navigate('/tasks')} 
             />
-            <SidebarLink icon={<Users />} label="Start Searching" />
+            <SidebarLink icon={<Users />} label="Start Searching" onClick={() => navigate('/match')}/>
             <SidebarLink 
               icon={<Calendar />} 
               label="Calendar"
@@ -394,7 +393,8 @@ const taskStats = getTaskStats();
             description="Connect with peers in your field" 
             emoji="👥" 
             color="green" 
-            status="12 online" 
+            status="12 online"
+            onClick={() => navigate('/match')} 
           />
           <EnhancedWidgetCard 
             title="Chat Rooms" 

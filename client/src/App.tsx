@@ -10,6 +10,7 @@ import Tasks from './Tasks';
 import ProfilePage from './Profile'; 
 import GoogleCalendar from "./components/GoogleCalendar";
 import Help from './components/Help';
+import Match from './Match';
 
 export default function App() {
   const { user } = useAuth();
@@ -23,10 +24,11 @@ export default function App() {
 
       {/* Protected dashboard route */}
       <Route path="/dashboard" element={user ? <Dashboard /> : <Login />} />
-      <Route path="/tasks" element={<Tasks />} />
+      <Route path="/tasks" element={user ? <Tasks /> : <Login />} />
       <Route path="/profile" element={user ? <ProfilePage /> : <Login />} />
       <Route path="/calendar" element={user ? <GoogleCalendar /> : <Login />} />
       <Route path="/Help" element={user ? <Help /> : <Login />} />
+      <Route path="/match" element={user ? <Match /> : <Login />} />
 
       {/*terms n condition*/}
       <Route path="/terms" element={<Terms />} />

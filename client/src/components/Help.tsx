@@ -40,7 +40,7 @@ export default function Help(){
             <nav className="space-y-2 font-medium">
                 <SidebarLink icon={<BarChart3 />} label="Dashboard" onClick={() => navigate('/dashboard')} />
                 <SidebarLink icon={<ListTodo />} label="Tasks" onClick={() => navigate('/tasks')} />
-                <SidebarLink icon={<Users />} label="Start Searching" />
+                <SidebarLink icon={<Users />} label="Start Searching" onClick={() => navigate('/match')}/>
                 <SidebarLink icon={<Calendar />} label="Calendar" onClick={() => navigate('/calendar')} />
                 <SidebarLink icon={<BarChart3 />} label="Leaderboard" />
             </nav>
