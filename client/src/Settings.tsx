@@ -123,8 +123,8 @@ export default function SettingsPage() {
                 </div>
             </aside>
 
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 font-sans">
-            <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/30">
+        <div className="flex-1 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 font-sans">
+            <div className="w-full bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/30">
                 <h1 className="text-3xl font-bold text-indigo-700 mb-6 flex items-center gap-3">
                     <Settings className="text-indigo-600" /> Settings
                 </h1>
@@ -234,8 +234,21 @@ function SettingToggle({
 }
 
 function toLabel(key: string) {
-    return key
+    const customLabels: Record<string, string> = {
+        allowDM: 'Allow Direct Messages',
+        blockAnonDM: 'Block Anonymous Direct Messages',
+        taskReminders: 'Task Reminders',
+        pomodoroAlerts: 'Pomodoro Alerts',
+        friendRequests: 'Friend Requests',
+        directMessages: 'Direct Messages',
+        groupInvites: 'Group Invites',
+        buddyActivity: 'Buddy Activity',
+        allowSearch: 'Allow Search',
+        showStreak: 'Show Streak',
+        showAchievements: 'Show Achievements',
+    };
+
+    return customLabels[key] || key
         .replace(/([A-Z])/g, ' $1')
-        .replace(/^./, str => str.toUpperCase())
-        .replace('Dm', 'DM');
+        .replace(/^./, str => str.toUpperCase());
 }
