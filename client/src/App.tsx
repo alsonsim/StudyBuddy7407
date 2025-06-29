@@ -10,7 +10,11 @@ import Tasks from './Tasks';
 import ProfilePage from './Profile'; 
 import GoogleCalendar from "./components/GoogleCalendar";
 import Help from './components/Help';
+<<<<<<< HEAD
 import Match from './Match';
+=======
+import SettingsPage from "./Settings";
+>>>>>>> 7905526520da49b50bd65107afcadcdf9695d5e4
 
 export default function App() {
   const { user } = useAuth();
@@ -28,7 +32,11 @@ export default function App() {
       <Route path="/profile" element={user ? <ProfilePage /> : <Login />} />
       <Route path="/calendar" element={user ? <GoogleCalendar /> : <Login />} />
       <Route path="/Help" element={user ? <Help /> : <Login />} />
+<<<<<<< HEAD
       <Route path="/match" element={user ? <Match /> : <Login />} />
+=======
+      <Route path="/settings" element={user ? <SettingsPage /> : <Login />} />
+>>>>>>> 7905526520da49b50bd65107afcadcdf9695d5e4
 
       {/*terms n condition*/}
       <Route path="/terms" element={<Terms />} />
