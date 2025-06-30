@@ -2,7 +2,7 @@ import React, {useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SidebarLink } from "../Tasks"; 
 import { useAuth } from "../AuthContext";
-import { LogOut, Calendar, BarChart3, ListTodo, Settings, HelpCircle, Users, User } from "lucide-react";
+import { LogOut, Calendar, BarChart3, ListTodo, Settings, HelpCircle, Users, User, Award } from "lucide-react";
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 
@@ -42,7 +42,7 @@ export default function Help(){
                 <SidebarLink icon={<ListTodo />} label="Tasks" onClick={() => navigate('/tasks')} />
                 <SidebarLink icon={<Users />} label="Start Searching" onClick={() => navigate('/match')}/>
                 <SidebarLink icon={<Calendar />} label="Calendar" onClick={() => navigate('/calendar')} />
-                <SidebarLink icon={<BarChart3 />} label="Leaderboard" />
+                <SidebarLink icon={<Award />} label="Achievements" />
             </nav>
             </div>
 

@@ -25,7 +25,8 @@ import {
   Sparkles,
   Shield,
   Palette,
-  Globe
+  Globe,
+  Award
 } from 'lucide-react';
 
 const faculties = [
@@ -236,7 +237,7 @@ export default function ProfilePage() {
             <SidebarLink icon={<ListTodo />} label="Tasks" onClick={() => navigate('/tasks')} />
             <SidebarLink icon={<Users />} label="Start Searching" onClick={() => navigate('/match')}/>
             <SidebarLink icon={<Calendar />} label="Calendar" onClick={() => navigate('/calendar') }/>
-            <SidebarLink icon={<BarChart3 />} label="Leaderboard" />
+            <SidebarLink icon={<Award />} label="Achievements" />
           </nav>
         </div>
 

@@ -24,7 +24,8 @@ import {
   CheckCircle,
   AlertTriangle,
   ListTodo,
-  Zap
+  Zap,
+  Award
 } from 'lucide-react';
 
 interface Task {
@@ -225,7 +226,7 @@ const taskStats = getTaskStats();
               onClick={() => navigate('/calendar')}
             />
             
-            <SidebarLink icon={<BarChart3 />} label="Leaderboard" />
+            <SidebarLink icon={<Award />} label="Achievements" />
           </nav>
         </div>
 

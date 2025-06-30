@@ -30,7 +30,8 @@ import {
   HelpCircle,
   User,
   LogOut,
-  ListTodo
+  ListTodo,
+  Award
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
@@ -234,7 +235,7 @@ export default function Match() {
               label="Calendar"
               onClick={() => navigate('/calendar')}
             />
-            <SidebarLink icon={<BarChart3 />} label="Leaderboard" />
+            <SidebarLink icon={<Award />} label="Achievements" />
           </nav>
         </div>
 

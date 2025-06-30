@@ -31,7 +31,8 @@ import {
   X,
   CalendarDays,
   Tag,
-  Archive
+  Archive,
+  Award
 } from 'lucide-react';
 
 interface Task {
@@ -264,7 +265,7 @@ export default function Tasks() {
             <SidebarLink icon={<ListTodo />} label="Tasks" active />
             <SidebarLink icon={<Users />} label="Start Searching" onClick={() => navigate('/match')}/>
             <SidebarLink icon={<Calendar />} label="Calendar" onClick={() => navigate('/calendar') }/>
-            <SidebarLink icon={<BarChart3 />} label="Leaderboard" />
+            <SidebarLink icon={<Award />} label="Achievements" />
           </nav>
         </div>
 

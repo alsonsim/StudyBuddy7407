@@ -21,6 +21,7 @@ import {
   CalendarDays,
   TrendingUp,
   CheckCircle,
+  Award,
   AlertTriangle
 } from "lucide-react";
 import { auth } from "../firebase";
@@ -166,7 +167,7 @@ export default function GoogleCalendar() {
             <SidebarLink icon={<ListTodo />} label="Tasks" onClick={() => navigate('/tasks')} />
             <SidebarLink icon={<Users />} label="Start Searching" onClick={() => navigate('/match')}/>
             <SidebarLink icon={<Calendar />} label="Calendar" active />
-            <SidebarLink icon={<BarChart3 />} label="Leaderboard" />
+            <SidebarLink icon={<Award />} label="Achievements" />
           </nav>
         </div>
 
