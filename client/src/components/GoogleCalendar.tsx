@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import type * as JSX from 'react/jsx-runtime';
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { gapi } from "gapi-script";
