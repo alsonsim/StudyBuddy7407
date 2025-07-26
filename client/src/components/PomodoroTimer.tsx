@@ -239,7 +239,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ isOpen, onClose }) => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .slider-indigo::-webkit-slider-thumb {
           appearance: none;
           height: 20px;
