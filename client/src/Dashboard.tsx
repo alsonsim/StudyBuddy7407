@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import type { JSX } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from './firebase';
+import { auth, db } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from './firebase';
 import { signOut } from 'firebase/auth';
 import { useAuth } from './AuthContext';
 import PomodoroTimer from './components/PomodoroTimer';
+
 
 import {
   BarChart3,
@@ -45,14 +46,16 @@ export default function Dashboard() {
   const [name, setName] = useState('');
   const [avatarURL, setAvatarURL] = useState<string | null>(null);
   const [streak, setStreak] = useState(0); 
-  const [streakContinued, setStreakContinued] = useState(false);
   const [showStreakAnimation, setShowStreakAnimation] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isPomodoroOpen, setIsPomodoroOpen] = useState(false);
-  const [lastStreakDate, setLastStreakDate] = useState<string | null>(null); // In-memory storage
+  const [streakContinued, setStreakContinued] = useState(false);
   const navigate = useNavigate();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks] = useState<Task[]>([]);
+
+  
+  
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -69,7 +72,6 @@ export default function Dashboard() {
             const userData = userDoc.data();
             setName(userData.name || user.displayName || 'User');
             setAvatarURL(userData.avatarURL || user.photoURL);
-            setStreak(userData.streak || 0);
           } else {
             // Set default values if no document exists
             setName(user.displayName || 'User');
@@ -87,59 +89,80 @@ export default function Dashboard() {
   }, [user]);
 
   // Check if streak was already continued today (using in-memory storage)
-  useEffect(() => {
-    const today = new Date().toDateString();
-    if (lastStreakDate === today) {
-      setStreakContinued(true);
-    }
-  }, [lastStreakDate]);
+useEffect(() => {
+  const checkStreak = async () => {
+    if (!user) return;
 
-  useEffect(() => {
-  if (!user) return;
+    const userRef = doc(db, 'users', user.uid);
+    const userSnap = await getDoc(userRef);
+    if (!userSnap.exists()) return;
 
-  const savedTasks = localStorage.getItem(`tasks_${user.uid}`);
-  if (savedTasks) {
-    try {
-      const parsedTasks = JSON.parse(savedTasks);
-      setTasks(parsedTasks);
-    } catch (error) {
-      console.error('Error parsing saved tasks:', error);
-      setTasks([]);
+    const userData = userSnap.data();
+    const lastDateStr = userData.lastStreakDate;
+    const todayStr = new Date().toISOString().split("T")[0];
+
+    if (lastDateStr === todayStr) {
+      // Already continued today
+      setStreak(userData.streak || 0);
+      setStreakContinued(true); // ✅ Block button
+      return;
     }
-  }
+
+    const lastDate = new Date(lastDateStr);
+    const today = new Date();
+    const diffDays = Math.floor(
+      (today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffDays === 1) {
+      // Valid to continue
+      setStreak(userData.streak || 0);
+      setStreakContinued(false);
+    } else {
+      // Missed a day – reset
+      await setDoc(userRef, {
+        ...userData,
+        streak: 0,
+      }, { merge: true });
+
+      setStreak(0);
+      setStreakContinued(false);
+    }
+  };
+
+  checkStreak();
 }, [user]);
 
 const handleContinueStreak = async () => {
   if (streakContinued || !user) return;
 
-  const newStreak = streak + 1;
-  const today = new Date().toDateString();
+  const newStreak = streak + 1; // ✅ local first
+  setStreak(newStreak);        // ✅ update UI immediately
+  setStreakContinued(true);
+  setShowStreakAnimation(true);
+
   const userRef = doc(db, 'users', user.uid);
+  const todayStr = new Date().toISOString().split("T")[0];
 
   try {
     const userSnap = await getDoc(userRef);
+    if (!userSnap.exists()) return;
+    const userData = userSnap.data();
 
-    if (userSnap.exists()) {
-      // Merge into existing data
-      await setDoc(userRef, {
-        ...userSnap.data(),
-        streak: newStreak,
-        lastStreakDate: today
-      }, { merge: true });
-    } else {
-      console.warn('User document not found.');
-    }
-
-    setStreak(newStreak);
-    setStreakContinued(true);
-    setShowStreakAnimation(true);
-    setLastStreakDate(today);
-
-    setTimeout(() => setShowStreakAnimation(false), 3000);
+    await setDoc(userRef, {
+      ...userData,
+      streak: newStreak,
+      lastStreakDate: todayStr,
+    }, { merge: true });
   } catch (err) {
-    console.error('Error updating streak:', err);
+    console.error("Failed to update streak", err);
+    // Optional: rollback if needed
   }
+
+  setTimeout(() => setShowStreakAnimation(false), 3000);
 };
+
+
 
   const handleLogout = async () => {
     try {
