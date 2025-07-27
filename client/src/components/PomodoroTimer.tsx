@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, SkipForward, Settings, X, Coffee, Briefcase } from 'lucide-react';
+import { doc, getDoc, updateDoc, increment } from "firebase/firestore";
+import { auth, db } from "../firebase";
 
 interface PomodoroTimerProps {
   isOpen: boolean;
@@ -25,13 +27,18 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ isOpen, onClose }) => {
     : ((breakDuration * 60 - time) / (breakDuration * 60)) * 100;
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: number;
 
     if (isRunning && time > 0) {
       interval = setInterval(() => {
         setTime((prev) => prev - 1);
       }, 1000);
     } else if (time === 0) {
+      if (mode === "work") {
+        // Only update progress if it was a work session
+        updateStudyProgress(workDuration);
+      }
+
       const newMode = mode === 'work' ? 'break' : 'work';
       const newTime = newMode === 'work' ? workDuration * 60 : breakDuration * 60;
 
@@ -66,7 +73,27 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ isOpen, onClose }) => {
     setShowSettings(false);
   };
 
-  if (!isOpen) return null;
+  const updateStudyProgress = async (minutes: number) => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+    const data = userSnap.data();
+
+    const hoursToAdd = minutes / 60;
+
+    await updateDoc(userRef, {
+      studyHours: increment(hoursToAdd),
+    });
+
+    console.log(`✅ Added ${hoursToAdd} hours to ${user.uid}`);
+
+}
+  if (!isOpen) {
+    return null;
+  }
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-300 overflow-y-auto">

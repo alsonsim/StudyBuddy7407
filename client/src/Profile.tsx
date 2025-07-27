@@ -1,4 +1,3 @@
-// src/Settings.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -6,6 +5,7 @@ import { useAuth } from './AuthContext';
 import { db, auth } from './firebase';
 import { signOut } from 'firebase/auth';
 import { toast } from 'react-hot-toast';
+import type { JSX } from 'react';
 import {
   BarChart3,
   Calendar,
@@ -25,8 +25,7 @@ import {
   Sparkles,
   Shield,
   Palette,
-  Globe,
-  Award
+  Globe
 } from 'lucide-react';
 
 const faculties = [
@@ -235,9 +234,9 @@ export default function ProfilePage() {
           <nav className="space-y-2 font-medium">
             <SidebarLink icon={<BarChart3 />} label="Dashboard" onClick={() => navigate('/dashboard')} />
             <SidebarLink icon={<ListTodo />} label="Tasks" onClick={() => navigate('/tasks')} />
-            <SidebarLink icon={<Users />} label="Start Searching" onClick={() => navigate('/match')}/>
+            <SidebarLink icon={<Users />} label="Start Searching" />
             <SidebarLink icon={<Calendar />} label="Calendar" onClick={() => navigate('/calendar') }/>
-            <SidebarLink icon={<Award />} label="Achievements" onClick={() => navigate("/achievements")}/>
+            <SidebarLink icon={<BarChart3 />} label="Leaderboard" />
           </nav>
         </div>
 
@@ -463,7 +462,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6" onClick={() => navigate('/settings')}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <QuickActionCard
             icon={<Shield />}
             title="Privacy Settings"
@@ -487,40 +486,18 @@ export default function ProfilePage() {
 
       {/* Logout Modal */}
       {isLogoutOpen && (
-                          <div className="fixed inset-0 z-50 flex items-center justify-center">
-                          <div
-                              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-                              onClick={() => setIsLogoutOpen(false)}
-                          ></div>
-                          <div className="relative z-10 bg-white rounded-3xl p-8 shadow-2xl border border-gray-200 max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
-                              <div className="text-center mb-6">
-                                  <div className="mx-auto w-16 h-16 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center mb-4">
-                                      <LogOut className="w-8 h-8 text-white" />
-                                  </div>
-                                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                                  Ready to go?
-                                  </h3>
-                                  <p className="text-gray-600">
-                                  You'll be signed out. Your details are saved!
-                                  </p>
-                              </div>
-                              <div className="flex gap-4">
-                                  <button
-                                      onClick={() => setIsLogoutOpen(false)}
-                                      className="cursor-pointer flex-1 px-6 py-3 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
-                                  >
-                                      Stay
-                                  </button>
-                                  <button
-                                      onClick={handleLogout}
-                                      className="cursor-pointer flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5"
-                                  >
-                                      Sign Out
-                                  </button>
-                              </div>
-                          </div>
-                      </div>
-                )}
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setIsLogoutOpen(false)}></div>
+          <div className="relative z-10 bg-white rounded-3xl p-8 shadow-2xl border border-gray-200 max-w-md w-full mx-4">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to go?</h3>
+            <p className="text-gray-600 mb-8">You'll be signed out. Your settings are saved!</p>
+            <div className="flex gap-4">
+              <button onClick={() => setIsLogoutOpen(false)} className="cursor-pointer flex-1 px-6 py-3 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50">Stay</button>
+              <button onClick={handleLogout} className="cursor-pointer flex-1 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700">Sign Out</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
