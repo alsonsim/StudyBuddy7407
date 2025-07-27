@@ -429,13 +429,6 @@ const taskStats = getTaskStats();
             onClick={() => navigate('/chatroom')}
           />
           <EnhancedWidgetCard 
-            title="AI Tutor" 
-            description="Get personalized study assistance"
-            emoji="🤖"
-            color="indigo"
-            status="Available 24/7"
-          />
-          <EnhancedWidgetCard 
             title="Achievements" 
             description="Unlock badges and rewards"
             emoji="🏆"
