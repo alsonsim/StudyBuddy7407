@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { gapi } from "gapi-script";
@@ -25,10 +25,40 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { auth } from "../firebase";
-import { useRef } from "react";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
-import type { calendar_v3 } from "gapi.client.calendar-v3";
+
+// Type declarations for Google Calendar API
+declare global {
+  namespace gapi.client.calendar {
+    interface EventsListParameters {
+      calendarId?: string;
+      timeMin?: string;
+      showDeleted?: boolean;
+      singleEvents?: boolean;
+      maxResults?: number;
+      orderBy?: string;
+    }
+
+    interface EventsListResponse {
+      result: {
+        items?: Schema$Event[];
+      };
+    }
+
+    interface Schema$Event {
+      summary?: string | null;
+      start?: {
+        dateTime?: string | null;
+        date?: string | null;
+      } | null;
+      end?: {
+        dateTime?: string | null;
+        date?: string | null;
+      } | null;
+    }
+  }
+}
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
@@ -36,6 +66,7 @@ const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 export default function GoogleCalendar() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  
   type GoogleCalendarEvent = {
     title: string;
     start: string;
@@ -95,26 +126,24 @@ export default function GoogleCalendar() {
   }, []);
 
   const loadEvents = () => {
-    const gapiClient = gapi.client as typeof gapi.client & {
-      calendar: typeof gapi.client.calendar;
-    };
-
-    gapiClient.calendar.events.list({
+    const calendar = gapi.client.calendar;
+    
+    calendar.events.list({
       calendarId: "primary",
       timeMin: new Date().toISOString(),
       showDeleted: false,
       singleEvents: true,
       maxResults: 20,
       orderBy: "startTime",
-    })
-      .then((response) => {
-        const items = (response.result.items || []) as calendar_v3.Schema$Event[];
+    } as gapi.client.calendar.EventsListParameters)
+      .then((response: gapi.client.calendar.EventsListResponse) => {
+        const items = response.result.items || [];
 
-        const formatted = items.map((item: calendar_v3.Schema$Event): GoogleCalendarEvent => ({
-  title: item.summary ?? "Untitled Event",
-  start: item.start?.dateTime || item.start?.date || "",
-  end: item.end?.dateTime || item.end?.date || "",
-}));
+        const formatted = items.map((item): GoogleCalendarEvent => ({
+          title: item.summary ?? "Untitled Event",
+          start: item.start?.dateTime || item.start?.date || "",
+          end: item.end?.dateTime || item.end?.date || "",
+        }));
 
         setEvents(formatted);
       });
