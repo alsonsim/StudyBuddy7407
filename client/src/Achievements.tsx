@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, type JSX } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, auth } from './firebase';
 import { signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+
 import {
   Award, Lock, Trophy, Star, Target, Zap, BookOpen, Clock, Users, Flame,
   Calendar, CheckCircle, TrendingUp, Medal, Crown, Sparkles, ShieldCheck,
@@ -13,8 +15,19 @@ export default function AchievementsPage() {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [animateStats, setAnimateStats] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const uid = auth.currentUser?.uid;
+      if (!uid) return;
+      const userRef = doc(db, "users", uid);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        setUser(userSnap.data());
+      }
+    };
+    fetchUser();
     setAnimateStats(true);
   }, []);
 
@@ -34,99 +47,109 @@ export default function AchievementsPage() {
       title: "First Steps",
       description: "Complete your first study session",
       icon: <BookOpen className="w-6 h-6" />,
-      unlocked: true,
+      unlocked: (user?.studyHours || 0) >= 1,
       category: "beginner",
       rarity: "common",
       points: 10,
-      unlockedDate: "2024-01-15"
+      progress: Math.min(100, Math.floor((user?.studyHours || 0) / 1 * 100)),
+      unlockedDate: (user?.studyHours || 0) >= 1 ? new Date().toISOString() : null
     },
     {
       id: 2,
       title: "Streak Master",
       description: "Maintain a 7-day study streak",
       icon: <Flame className="w-6 h-6" />,
-      unlocked: true,
+      unlocked: (user?.streak || 0) >= 7,
       category: "streak",
       rarity: "rare",
       points: 50,
-      unlockedDate: "2024-01-22"
+      progress: Math.min(100, Math.floor((user?.streak || 0) / 7 * 100)),
+      unlockedDate: (user?.streak || 0) >= 7 ? new Date().toISOString() : null
     },
     {
       id: 3,
       title: "Time Warrior",
       description: "Study for 100 hours total",
       icon: <Clock className="w-6 h-6" />,
-      unlocked: false,
+      unlocked: (user?.studyHours || 0) >= 100,
       category: "time",
       rarity: "epic",
       points: 100,
-      progress: 67
+      progress: Math.min(100, Math.floor((user?.studyHours || 0) / 100 * 100)),
+      unlockedDate: (user?.studyHours || 0) >= 100 ? new Date().toISOString() : null
     },
     {
       id: 4,
       title: "Social Butterfly",
       description: "Add 10 study buddies",
       icon: <Users className="w-6 h-6" />,
-      unlocked: true,
+      unlocked: (user?.buddies || []).length >= 10,
       category: "social",
       rarity: "uncommon",
       points: 25,
-      unlockedDate: "2024-01-20"
+      progress: Math.min(100, Math.floor(((user?.buddies || []).length || 0) / 10 * 100)),
+      unlockedDate: (user?.buddies || []).length >= 10 ? new Date().toISOString() : null
     },
     {
       id: 5,
       title: "Task Crusher",
       description: "Complete 50 tasks",
       icon: <Target className="w-6 h-6" />,
-      unlocked: false,
+      unlocked: (user?.tasksCompleted || 0) >= 50,
       category: "tasks",
       rarity: "rare",
       points: 75,
-      progress: 32
+      progress: Math.min(100, Math.floor((user?.tasksCompleted || 0) / 50 * 100)),
+      unlockedDate: (user?.tasksCompleted || 0) >= 50 ? new Date().toISOString() : null
     },
     {
       id: 6,
       title: "Speed Demon",
       description: "Complete 5 tasks in one day",
       icon: <Zap className="w-6 h-6" />,
-      unlocked: true,
+      unlocked: (user?.tasksCompletedToday || 0) >= 5,
       category: "tasks",
       rarity: "uncommon",
       points: 30,
-      unlockedDate: "2024-01-18"
+      progress: Math.min(100, Math.floor((user?.tasksCompletedToday || 0) / 5 * 100)),
+      unlockedDate: (user?.tasksCompletedToday || 0) >= 5 ? new Date().toISOString() : null
     },
     {
       id: 7,
       title: "Knowledge Seeker",
       description: "Study 10 different subjects",
       icon: <Star className="w-6 h-6" />,
-      unlocked: false,
+      unlocked: (user?.subjectsStudied || []).length >= 10,
       category: "learning",
       rarity: "epic",
       points: 150,
-      progress: 60
+      progress: Math.min(100, Math.floor((user?.subjectsStudied || []).length / 10 * 100)),
+      unlockedDate: (user?.subjectsStudied || []).length >= 10 ? new Date().toISOString() : null
     },
     {
       id: 8,
       title: "Legendary Scholar",
       description: "Reach 1000 study hours",
       icon: <Crown className="w-6 h-6" />,
-      unlocked: false,
+      unlocked: (user?.studyHours || 0) >= 1000,
       category: "time",
       rarity: "legendary",
       points: 500,
-      progress: 12
+      progress: Math.min(100, Math.floor((user?.studyHours || 0) / 1000 * 100)),
+      unlockedDate: (user?.studyHours || 0) >= 1000 ? new Date().toISOString() : null
     },
+
     {
       id: 9,
       title: "Perfect Week",
       description: "Complete all daily goals for a week",
       icon: <CheckCircle className="w-6 h-6" />,
-      unlocked: true,
+      unlocked: (user?.weeklyGoalsCompleted || 0) >= 7,
       category: "goals",
       rarity: "rare",
       points: 60,
-      unlockedDate: "2024-01-25"
+      progress: Math.min(100, Math.floor((user?.weeklyGoalsCompleted || 0) / 7 * 100)),
+      unlockedDate: (user?.weeklyGoalsCompleted || 0) >= 7 ? new Date().toISOString() : null
     }
   ];
 
@@ -150,7 +173,7 @@ export default function AchievementsPage() {
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
-      case 'common': return 'from-gray-400 to-gray-500';
+      case 'common': return 'from-pink-300 to-pink-400';
       case 'uncommon': return 'from-green-400 to-green-500';
       case 'rare': return 'from-blue-400 to-blue-500';
       case 'epic': return 'from-purple-400 to-purple-500';
@@ -161,7 +184,7 @@ export default function AchievementsPage() {
 
   const getRarityBorder = (rarity: string) => {
     switch (rarity) {
-      case 'common': return 'border-gray-300';
+      case 'common': return 'border-pink-300';
       case 'uncommon': return 'border-green-300';
       case 'rare': return 'border-blue-300';
       case 'epic': return 'border-purple-300';
@@ -342,7 +365,7 @@ export default function AchievementsPage() {
                   </p>
 
                   {/* Progress Bar for Locked Achievements */}
-                  {!achievement.unlocked && achievement.progress && (
+                  {!achievement.unlocked && typeof achievement.progress === "number" && (
                     <div className="mt-4">
                       <div className="flex justify-between text-xs text-gray-500 mb-1">
                         <span>Progress</span>
