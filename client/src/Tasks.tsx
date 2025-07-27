@@ -5,6 +5,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import { signOut } from 'firebase/auth';
 import { useAuth } from './AuthContext';
+import type { JSX } from 'react/jsx-runtime';
 
 import {
   BarChart3,

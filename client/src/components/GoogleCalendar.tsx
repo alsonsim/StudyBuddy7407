@@ -1,3 +1,7 @@
+/// <reference types="gapi" />
+/// <reference types="gapi.auth2" />
+/// <reference types="gapi.client.calendar-v3" />
+
 import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -26,12 +30,8 @@ import {
 } from "lucide-react";
 import { auth } from "../firebase";
 import { useRef } from "react";
-import type { CalendarApi } from "@fullcalendar/core";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
-/// <reference types="gapi" />
-/// <reference types="gapi.auth2" />
-/// <reference types="gapi.client.calendar" />
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
@@ -98,19 +98,21 @@ export default function GoogleCalendar() {
   }, []);
 
   const loadEvents = () => {
-    gapi.client.calendar.events
-      .list({
-        calendarId: "primary",
-        timeMin: new Date().toISOString(),
-        showDeleted: false,
-        singleEvents: true,
-        maxResults: 20,
-        orderBy: "startTime",
-      })
-      .then((response: gapi.client.Response<gapi.client.calendar.Events>) => {
-        const items = response.result.items || [];
+    interface GapiClientWithCalendar extends typeof gapi.client {
+      calendar: typeof gapi.client.calendar;
+    }
+    ((gapi.client as GapiClientWithCalendar).calendar.events).list({
+      calendarId: "primary",
+      timeMin: new Date().toISOString(),
+      showDeleted: false,
+      singleEvents: true,
+      maxResults: 20,
+      orderBy: "startTime",
+    })
+      .then((response) => {
+        const items = (response.result.items || []) as gapi.client.calendar_v3.Schema$Event[];
 
-        const formatted = items.map((item): GoogleCalendarEvent => ({
+        const formatted = items.map((item: gapi.client.calendar_v3.Schema$Event): GoogleCalendarEvent => ({
           title: item.summary ?? "Untitled Event",
           start: item.start?.dateTime || item.start?.date || "",
           end: item.end?.dateTime || item.end?.date || "",
