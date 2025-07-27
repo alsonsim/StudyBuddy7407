@@ -1,5 +1,3 @@
-/// <reference types="gapi.client.calendar-v3" />
-
 import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -30,6 +28,7 @@ import { auth } from "../firebase";
 import { useRef } from "react";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
+import type { calendar_v3 } from "gapi.client.calendar-v3";
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
@@ -109,14 +108,13 @@ export default function GoogleCalendar() {
       orderBy: "startTime",
     })
       .then((response) => {
-        const items = (response.result.items || []) as import("gapi.client/calendar").Schema$Event[];
+        const items = (response.result.items || []) as calendar_v3.Schema$Event[];
 
         const formatted = items.map((item: calendar_v3.Schema$Event): GoogleCalendarEvent => ({
-          title: item.summary ?? "Untitled Event",
-          start: item.start?.dateTime || item.start?.date || "",
-          end: item.end?.dateTime || item.end?.date || "",
-        }));
-
+  title: item.summary ?? "Untitled Event",
+  start: item.start?.dateTime || item.start?.date || "",
+  end: item.end?.dateTime || item.end?.date || "",
+}));
 
         setEvents(formatted);
       });
