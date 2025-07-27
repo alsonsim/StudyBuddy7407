@@ -109,12 +109,12 @@ const uploadAvatarToSupabase = async (file: File): Promise<string> => {
   const fileName = `${uuidv4()}.${fileExt}`;
   const filePath = `avatars/${fileName}`;
 
-  const { error } = await supabase.storage.from('avatars').upload(filePath, file);
-  if (error) {
-    console.error('Upload error:', error);
-    toast.error('Avatar upload failed');
-    return '';
-  }
+  const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file);
+if (uploadError) {
+  console.error('Upload error:', uploadError);
+  toast.error('Avatar upload failed');
+  return '';
+}
 
   const { data, error: urlError } = supabase.storage
     .from('avatars')

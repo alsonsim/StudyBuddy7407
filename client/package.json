@@ -42,6 +42,7 @@
     "@types/gapi.calendar": "^3.0.11",
     "@types/gapi.client": "^1.0.8",
     "@types/gapi.client.calendar": "^3.0.12",
+    "@types/gapi.client.calendar-v3": "^0.0.4",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.7.0",
