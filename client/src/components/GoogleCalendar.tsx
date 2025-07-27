@@ -1,7 +1,3 @@
-/// <reference types="gapi" />
-/// <reference types="gapi.auth2" />
-/// <reference types="gapi.client.calendar-v3" />
-
 import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
