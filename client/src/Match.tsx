@@ -36,6 +36,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "./firebase";
+import type { JSX } from "react";
 
 export default function Match() {
   const { user } = useAuth();
@@ -60,6 +61,7 @@ export default function Match() {
   // Load user data from Firebase
   useEffect(() => {
     const loadUserData = async () => {
+      if (!user) return;
       if (user) {
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -99,7 +101,7 @@ export default function Match() {
 
     const toggleSearching = async () => {
     if (!user) return;
-    const docRef = doc(db, "matchQueue", user.uid);
+const docRef = doc(db, "matchQueue", user.uid);
 
       if (isSearching) {
         await deleteDoc(docRef);
@@ -119,6 +121,9 @@ export default function Match() {
 };
 
   const checkForMatch = async () => {
+
+    if (!user) return;
+
     const queueRef = collection(db, "matchQueue");
     const q = query(queueRef, orderBy("timestamp"));
     const snapshot = await getDocs(q);

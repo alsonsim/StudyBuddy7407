@@ -27,7 +27,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ isOpen, onClose }) => {
     : ((breakDuration * 60 - time) / (breakDuration * 60)) * 100;
 
   useEffect(() => {
-    let interval: number;
+    let interval: ReturnType<typeof setInterval>;
 
     if (isRunning && time > 0) {
       interval = setInterval(() => {

@@ -29,6 +29,9 @@ import { useRef } from "react";
 import type { CalendarApi } from "@fullcalendar/core";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
+/// <reference types="gapi" />
+/// <reference types="gapi.auth2" />
+/// <reference types="gapi.client.calendar" />
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
@@ -36,7 +39,13 @@ const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 export default function GoogleCalendar() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [events, setEvents] = useState([]);
+  type GoogleCalendarEvent = {
+    title: string;
+    start: string;
+    end: string;
+  };
+
+  const [events, setEvents] = useState<GoogleCalendarEvent[]>([]);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showIntegrationPrompt, setShowIntegrationPrompt] = useState(true);
@@ -53,25 +62,25 @@ export default function GoogleCalendar() {
   }, []);
 
   useEffect(() => {
-  const loadUserData = async () => {
-    if (user) {
-      try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          setName(userData.name || user.displayName || "User");
-          setAvatarURL(userData.avatarURL || user.photoURL || "/default-avatar.png");
-        } else {
+    const loadUserData = async () => {
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setName(userData.name || user.displayName || "User");
+            setAvatarURL(userData.avatarURL || user.photoURL || "/default-avatar.png");
+          } else {
+            setName(user.displayName || "User");
+            setAvatarURL(user.photoURL || "/default-avatar.png");
+          }
+        } catch (error) {
+          console.error("Error loading user data:", error);
           setName(user.displayName || "User");
           setAvatarURL(user.photoURL || "/default-avatar.png");
         }
-      } catch (error) {
-        console.error("Error loading user data:", error);
-        setName(user.displayName || "User");
-        setAvatarURL(user.photoURL || "/default-avatar.png");
       }
-    }
-  };
+    };
 
     loadUserData();
   }, [user]);
@@ -98,13 +107,15 @@ export default function GoogleCalendar() {
         maxResults: 20,
         orderBy: "startTime",
       })
-      .then((response) => {
+      .then((response: gapi.client.Response<gapi.client.calendar.Events>) => {
         const items = response.result.items || [];
-        const formatted = items.map((item) => ({
-          title: item.summary,
-          start: item.start?.dateTime || item.start?.date,
-          end: item.end?.dateTime || item.end?.date,
+
+        const formatted = items.map((item): GoogleCalendarEvent => ({
+          title: item.summary ?? "Untitled Event",
+          start: item.start?.dateTime || item.start?.date || "",
+          end: item.end?.dateTime || item.end?.date || "",
         }));
+
         setEvents(formatted);
       });
   };
@@ -132,7 +143,7 @@ export default function GoogleCalendar() {
       const eventDate = new Date(event.start);
       return eventDate.toDateString() === today.toDateString();
     });
-    
+
     const thisWeekEvents = events.filter(event => {
       const eventDate = new Date(event.start);
       const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -165,9 +176,9 @@ export default function GoogleCalendar() {
           <nav className="space-y-2 font-medium">
             <SidebarLink icon={<BarChart3 />} label="Dashboard" onClick={() => navigate('/dashboard')} />
             <SidebarLink icon={<ListTodo />} label="Tasks" onClick={() => navigate('/tasks')} />
-            <SidebarLink icon={<Users />} label="Start Searching" onClick={() => navigate('/match')}/>
+            <SidebarLink icon={<Users />} label="Start Searching" onClick={() => navigate('/match')} />
             <SidebarLink icon={<Calendar />} label="Calendar" active />
-            <SidebarLink icon={<Award />} label="Achievements" onClick={() => navigate("/achievements")}/>
+            <SidebarLink icon={<Award />} label="Achievements" onClick={() => navigate("/achievements")} />
           </nav>
         </div>
 
@@ -231,13 +242,13 @@ export default function GoogleCalendar() {
           <h1 className="text-3xl font-bold mb-2">📅 Your Schedule Dashboard</h1>
           <p className="text-lg opacity-90 mb-6">Stay organized and never miss an important event</p>
           <div className="flex gap-4">
-            <button 
+            <button
               className="flex items-center gap-2 cursor-pointer bg-white/20 text-white px-6 py-3 rounded-xl transition-all duration-300 transform hover:bg-white/30 hover:-translate-y-1 hover:shadow-md active:scale-95"
               onClick={handleIntegrationConfirm}
             >
               <CalendarDays size={16} /> Sync Calendar
             </button>
-            <button 
+            <button
               className="cursor-pointer bg-white text-indigo-600 px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:bg-gray-100 hover:-translate-y-1 hover:shadow-md active:scale-95"
               onClick={() => navigate('/tasks')}
             >
@@ -248,37 +259,37 @@ export default function GoogleCalendar() {
 
         {/* Calendar Stats */}
         <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <EnhancedStatCard 
-            title="Total Events" 
-            value={String(calendarStats.totalEvents)} 
-            subtitle="in your calendar" 
-            color="indigo" 
-            icon={<Calendar />} 
-            trend={`${calendarStats.upcomingEvents} upcoming`} 
+          <EnhancedStatCard
+            title="Total Events"
+            value={String(calendarStats.totalEvents)}
+            subtitle="in your calendar"
+            color="indigo"
+            icon={<Calendar />}
+            trend={`${calendarStats.upcomingEvents} upcoming`}
           />
-          <EnhancedStatCard 
-            title="Today's Events" 
-            value={String(calendarStats.todayEvents)} 
-            subtitle="scheduled today" 
-            color="green" 
-            icon={<CheckCircle />} 
-            trend={calendarStats.todayEvents > 0 ? "Stay on track!" : "Free day ahead"} 
+          <EnhancedStatCard
+            title="Today's Events"
+            value={String(calendarStats.todayEvents)}
+            subtitle="scheduled today"
+            color="green"
+            icon={<CheckCircle />}
+            trend={calendarStats.todayEvents > 0 ? "Stay on track!" : "Free day ahead"}
           />
-          <EnhancedStatCard 
-            title="This Week" 
-            value={String(calendarStats.thisWeekEvents)} 
-            subtitle="events this week" 
-            color="purple" 
-            icon={<Clock />} 
-            trend="Plan accordingly" 
+          <EnhancedStatCard
+            title="This Week"
+            value={String(calendarStats.thisWeekEvents)}
+            subtitle="events this week"
+            color="purple"
+            icon={<Clock />}
+            trend="Plan accordingly"
           />
-          <EnhancedStatCard 
-            title="Calendar Status" 
-            value={events.length > 0 ? "Synced" : "Empty"} 
-            subtitle="sync status" 
-            color="amber" 
-            icon={<AlertTriangle />} 
-            trend={events.length > 0 ? "Up to date" : "No events found"} 
+          <EnhancedStatCard
+            title="Calendar Status"
+            value={events.length > 0 ? "Synced" : "Empty"}
+            subtitle="sync status"
+            color="amber"
+            icon={<AlertTriangle />}
+            trend={events.length > 0 ? "Up to date" : "No events found"}
           />
         </section>
 
@@ -293,7 +304,7 @@ export default function GoogleCalendar() {
               <p className="text-gray-600">Manage your schedule and stay organized</p>
             </div>
           </div>
-          
+
           <div className="bg-white/60 rounded-2xl p-6 shadow-lg border border-white/20">
             <FullCalendar
               ref={calendarRef}
@@ -321,40 +332,40 @@ export default function GoogleCalendar() {
 
       {/* Logout Modal */}
       {isLogoutOpen && (
-                          <div className="fixed inset-0 z-50 flex items-center justify-center">
-                          <div
-                              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-                              onClick={() => setIsLogoutOpen(false)}
-                          ></div>
-                          <div className="relative z-10 bg-white rounded-3xl p-8 shadow-2xl border border-gray-200 max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
-                              <div className="text-center mb-6">
-                                  <div className="mx-auto w-16 h-16 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center mb-4">
-                                      <LogOut className="w-8 h-8 text-white" />
-                                  </div>
-                                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                                  Ready to go?
-                                  </h3>
-                                  <p className="text-gray-600">
-                                  You'll be signed out. Your events are saved!
-                                  </p>
-                              </div>
-                              <div className="flex gap-4">
-                                  <button
-                                      onClick={() => setIsLogoutOpen(false)}
-                                      className="cursor-pointer flex-1 px-6 py-3 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
-                                  >
-                                      Stay
-                                  </button>
-                                  <button
-                                      onClick={handleLogout}
-                                      className="cursor-pointer flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5"
-                                  >
-                                      Sign Out
-                                  </button>
-                              </div>
-                          </div>
-                      </div>
-                )}
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setIsLogoutOpen(false)}
+          ></div>
+          <div className="relative z-10 bg-white rounded-3xl p-8 shadow-2xl border border-gray-200 max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
+            <div className="text-center mb-6">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center mb-4">
+                <LogOut className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                Ready to go?
+              </h3>
+              <p className="text-gray-600">
+                You'll be signed out. Your events are saved!
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setIsLogoutOpen(false)}
+                className="cursor-pointer flex-1 px-6 py-3 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
+              >
+                Stay
+              </button>
+              <button
+                onClick={handleLogout}
+                className="cursor-pointer flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Google Calendar Integration Prompt */}
       {showIntegrationPrompt && (
@@ -404,7 +415,7 @@ function EnhancedStatCard({
   value: string;
   subtitle: string;
   color: 'indigo' | 'green' | 'purple' | 'amber';
-  icon: JSX.Element;
+  icon: React.ReactNode;
   trend: string;
 }) {
   const colorMap = {
@@ -418,7 +429,7 @@ function EnhancedStatCard({
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20 group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
       <div className="flex items-center justify-between mb-4">
         <div className={`p-3 rounded-xl bg-gradient-to-r ${colorMap[color]} text-white shadow-lg group-hover:scale-110 transition-transform`}>
-          {React.cloneElement(icon, { size: 20 })}
+          {React.isValidElement(icon) && React.cloneElement(icon, { size: 20 })}
         </div>
         <TrendingUp className="text-green-500 text-sm" size={16} />
       </div>
