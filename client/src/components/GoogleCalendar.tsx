@@ -32,7 +32,7 @@ import { doc, getDoc } from "firebase/firestore";
 declare global {
   namespace gapi.client.calendar {
     interface EventsListParameters {
-      calendarId?: string;
+      calendarId: string;
       timeMin?: string;
       showDeleted?: boolean;
       singleEvents?: boolean;
