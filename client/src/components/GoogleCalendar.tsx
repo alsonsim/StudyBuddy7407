@@ -94,10 +94,11 @@ export default function GoogleCalendar() {
   }, []);
 
   const loadEvents = () => {
-    interface GapiClientWithCalendar extends typeof gapi.client {
+    const gapiClient = gapi.client as typeof gapi.client & {
       calendar: typeof gapi.client.calendar;
-    }
-    ((gapi.client as GapiClientWithCalendar).calendar.events).list({
+    };
+
+    gapiClient.calendar.events.list({
       calendarId: "primary",
       timeMin: new Date().toISOString(),
       showDeleted: false,
