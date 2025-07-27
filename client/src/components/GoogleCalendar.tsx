@@ -1,3 +1,5 @@
+/// <reference types="gapi.client.calendar-v3" />
+
 import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -28,7 +30,6 @@ import { auth } from "../firebase";
 import { useRef } from "react";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
-import type { calendar_v3 } from "gapi.client.calendar-v3";
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
@@ -108,7 +109,7 @@ export default function GoogleCalendar() {
       orderBy: "startTime",
     })
       .then((response) => {
-        const items = (response.result.items || []) as calendar_v3.Schema$Event[];
+        const items = (response.result.items || []) as import("gapi.client/calendar").Schema$Event[];
 
         const formatted = items.map((item: calendar_v3.Schema$Event): GoogleCalendarEvent => ({
           title: item.summary ?? "Untitled Event",
@@ -430,7 +431,7 @@ function EnhancedStatCard({
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20 group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
       <div className="flex items-center justify-between mb-4">
         <div className={`p-3 rounded-xl bg-gradient-to-r ${colorMap[color]} text-white shadow-lg group-hover:scale-110 transition-transform`}>
-          {React.isValidElement(icon) ? React.cloneElement(icon, { size: 20 }) : icon}
+          {icon}
         </div>
         <TrendingUp className="text-green-500 text-sm" size={16} />
       </div>
