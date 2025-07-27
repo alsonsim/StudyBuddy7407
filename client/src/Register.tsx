@@ -116,15 +116,13 @@ if (uploadError) {
   return '';
 }
 
-  const { data, error: urlError } = supabase.storage
-    .from('avatars')
-    .getPublicUrl(filePath);
+  const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
 
-  if (urlError || !data?.publicUrl) {
-    console.error('Failed to get public URL:', urlError?.message);
-    toast.error('Failed to get avatar URL');
-    return '';
-  }
+if (!data?.publicUrl) {
+  console.error('Failed to get public URL');
+  toast.error('Failed to get avatar URL');
+  return '';
+}
 
   return data.publicUrl;
 };
