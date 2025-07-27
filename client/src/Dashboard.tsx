@@ -426,6 +426,7 @@ const taskStats = getTaskStats();
             emoji="💬" 
             color="purple" 
             status="3 new messages" 
+            onClick={() => navigate('/chatroom')}
           />
           <EnhancedWidgetCard 
             title="AI Tutor" 

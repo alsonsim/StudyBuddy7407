@@ -13,6 +13,7 @@ import Help from './components/Help';
 import Match from './Match';
 import SettingsPage from "./Settings";
 import AchievementsPage from "./Achievements";
+import ChatRoom from "./ChatRoom";
 
 export default function App() {
   const { user } = useAuth();
@@ -33,6 +34,7 @@ export default function App() {
       <Route path="/match" element={user ? <Match /> : <Login />} />
       <Route path="/settings" element={user ? <SettingsPage /> : <Login />} />
       <Route path="/achievements" element={user ? <AchievementsPage /> : <Login />} />
+      <Route path="/chatroom" element={<ChatRoom />} />
 
       {/*terms n condition*/}
       <Route path="/terms" element={<Terms />} />
